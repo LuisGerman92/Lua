@@ -1,17 +1,7 @@
 --[[
 
-Agent Loader. This file loads any agent designed for playing Super Mario Bros.
+This script displays useful information about mario, the enemies and the state of the game on the screen.
 
-Rules for agents.
-- They are called without arguments
-- They must return a table which must contain the actions.
-	- the keys for the table are (case sensitive):
-	up, down, left, right, start, select, A, B. 
-	- the values for the keys can be:
-		- true: the key is force pressed.
-		- false: the key is force released.
-		- nil: the key remains unchanged (from the keyboard or joystick).
-		- "invert": reverses the user's button press.
 ]]
 
 -- import all RAM addresses.
