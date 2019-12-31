@@ -50,3 +50,7 @@ RamEnemyFlag = 0xF	--In Zelda, it's enemy direction used as flag
 --RamProjectileScreenX = 0x6E
 --ProjectileNumSlots = 5
 --RamProjectileFlag = 0xF	--In Zelda, it's enemy direction used as flag
+
+
+-- Player walk animation current frame index
+RAMPlayerWalkFrameIndex = 0x070D

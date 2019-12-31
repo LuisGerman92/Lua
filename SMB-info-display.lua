@@ -6,10 +6,6 @@ This script displays useful information about mario, the enemies and the state o
 
 -- import all RAM addresses.
 require "SMB_addresses"
-require "agent1"
-
--- display the name of the agent for the given amount of milliseconds
-emu.exec_time(3000, emu.message("Loading Agent 1."));
 
 -- display seconds counter on the screen
 seconds_counter = 0;
@@ -19,34 +15,35 @@ function display_player_info()
 	-- print the x and y coordinates of the player.
 	playerX = memory.readbyte(RamPlayerX) + memory.readbyte(RamPlayerScreenX)*0x100 + 4
 	playerY = memory.readbyte(RamPlayerY) + 16
-	gui.text(100, 10, "x: " .. tostring(playerX) .. ", y: " .. tostring(playerY));
+	gui.text(100, 10, "x: " .. playerX .. ", y: " .. playerY);
 	playerRawX = memory.readbyte(RamPlayerX)
-	gui.text(130, 20, "Raw x: " .. tostring(playerRawX));
+	gui.text(130, 20, "Raw x: " .. playerRawX);
 	playerScreenX = memory.readbyte(RamPlayerScreenX)
-	gui.text(130, 30, "Screen X: " .. tostring(playerScreenX));
+	gui.text(130, 30, "Screen X: " .. playerScreenX);
 	
 	-- print the number of lives left
 	playerLives = memory.readbyte(RamLives);
-	gui.text(200, 10, "Lives: " .. tostring(playerLives));
+	gui.text(200, 10, "Lives: " .. playerLives);
 	
 	-- print the current level and world in the screen
 	level = memory.readbyte(RamLevel);
 	world = memory.readbyte(RamWorld);
-	gui.text(200, 20, "Level: " .. tostring(level));
-	gui.text(200, 30, "World: " .. tostring(world));
+	gui.text(200, 20, "Level: " .. level);
+	gui.text(200, 30, "World: " .. world);
 	
 	-- display elapsed time in the top left corner of the screen in every frame
-	gui.text(10,10, "Time: " .. tostring(seconds_counter));
+	gui.text(10,10, "Time: " .. seconds_counter);
 end
 
+
+-- display x and y coords on enemy
 function display_enemy_info()
-	-- display x and y coords on enemy
 	for i=0, 4 do
 		enemy_X = memory.readbyte(RamEnemyX + i) + memory.readbyte(RamEnemyScreenX + i)*0x100 + 4
 		enemy_Y = memory.readbyte(RamEnemyY + i)
 		enemy_flag = memory.readbyte(RamEnemyFlag + i)
 		enemyType = memory.readbyte(RamEnemyType + i)
-		gui.text(10, 20+10*i, tostring(i) .. ": " .. tostring(enemy_flag) .. ", " .. tostring(enemy_X) .. ", " .. tostring(enemy_Y) .. ", " .. tostring(enemyType))
+		gui.text(10, 20+10*i, (i) .. ": " .. (enemy_flag) .. ", " .. (enemy_X) .. ", " .. (enemy_Y) .. ", " .. (enemyType))
 	end
 end
 
@@ -137,21 +134,27 @@ function draw_map()
 	end
 end
 
+-- Freezes the animation frame every two frames
+-- Note: Lua does not provide static variables so globals provide
+-- similar functionality.
+walkAnimationIndex = 0
+function walkStopMotion(frameCnt)
+	if (math.fmod(frameCnt,3) == 0) then
+		walkAnimationIndex = memory.readbyte(RAMPlayerWalkFrameIndex)
+	end
+	memory.writebyte(RAMPlayerWalkFrameIndex, walkAnimationIndex)
+end
+
 
 -- main loop
 while true do
 	-- advance the game 60 frames
 	for i=1, 60 do
-	
-		-- call agent1
-		--input = randomAgent()
-		--player = 1;
-		--joypad.write(player, input);
-		
 		emu.frameadvance();
 		display_player_info()
 		display_enemy_info()
 		draw_map()
+		walkStopMotion(i)
 	end;
 	
 	-- increase counter 
